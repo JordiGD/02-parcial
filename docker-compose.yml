@@ -1,0 +1,61 @@
+services:
+
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik_proxy
+    restart: unless-stopped
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`charizard.localhost`)"
+      - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
+
+  jorge-neo4j:
+    image: neo4j:5.22.0-community
+    container_name: neo4j_db
+    restart: always
+    environment:
+      NEO4J_AUTH: "${NEO4J_USER}/${NEO4J_PASSWORD}"
+    volumes:
+      - neo4j_data:/data
+      - ./import:/import
+    networks:
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.neo4j.rule=Host(`greninja.localhost`)"
+      - "traefik.http.services.neo4j.loadbalancer.server.port=7474"
+
+  flask-api:
+    build: ./flask
+    restart: always
+    depends_on:
+      - jorge-neo4j
+      - traefik
+    environment:
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USER=${NEO4J_USER}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+    networks:
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.flask-api.rule=Host(`blastoise.localhost`)"
+      - "traefik.http.services.flask-api.loadbalancer.server.port=5000"
+
+volumes:
+  neo4j_data:
+
+networks:
+  traefik_network:
+    driver: bridge
