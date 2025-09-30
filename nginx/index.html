@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala de Prensa Pokémon</title>
+    <h1>Bienvenido a la Sala de Prensa Pokémon</h1>
+    <p>Hora del servidor: <span id="server-time"></span></p>
+</head>
+<body>
+    <script>
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('server-time').textContent = now.toLocaleString();
+        }
+        
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+</head>
+</html>

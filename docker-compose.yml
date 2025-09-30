@@ -31,12 +31,6 @@ services:
       - ./import:/import
     networks:
       - traefik_network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.neo4j.rule=Host(`greninja.localhost`)"
-      - "traefik.http.routers.neo4j.middlewares=neo4j-auth"
-      - "traefik.http.middlewares.neo4j-auth.basicauth.users=${DASHBOARD_USER}:${DASHBOARD_PASSWORD}"
-      - "traefik.http.services.neo4j.loadbalancer.server.port=7474"
 
   flask-api-1:
     build: ./flask
@@ -46,7 +40,7 @@ services:
       - jorge-neo4j
       - traefik
     environment:
-      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_URI=bolt://neo4j_db:7687
       - NEO4J_USER=${NEO4J_USER}
       - NEO4J_PASSWORD=${NEO4J_PASSWORD}
     networks:
@@ -69,7 +63,7 @@ services:
       - jorge-neo4j
       - traefik
     environment:
-      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_URI=bolt://neo4j_db:7687
       - NEO4J_USER=${NEO4J_USER}
       - NEO4J_PASSWORD=${NEO4J_PASSWORD}
     networks:
@@ -88,7 +82,7 @@ services:
       - jorge-neo4j
       - traefik
     environment:
-      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_URI=bolt://neo4j_db:7687
       - NEO4J_USER=${NEO4J_USER}
       - NEO4J_PASSWORD=${NEO4J_PASSWORD}
     networks:
@@ -101,6 +95,19 @@ services:
       - "traefik.http.routers.legendario.service=legendario"
       - "traefik.http.routers.legendario.priority=100"
       - "traefik.http.services.legendario.loadbalancer.server.port=5000"
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    volumes:
+      - ./nginx:/usr/share/nginx/html:ro
+    networks:
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prensa.rule=Host(`psyduck.localhost`)"
+      - "traefik.http.services.prensa.loadbalancer.server.port=80"
 
 volumes:
   neo4j_data:

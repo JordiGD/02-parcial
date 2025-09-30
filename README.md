@@ -39,3 +39,18 @@ Se puede ver como en cada peticion se dividen en las 2 replicas
 - **Neo4j Browser**: http://greninja.localhost (requiere auth)
 - **API Comercial**: http://blastoise.localhost (con rate limit)
 - **API Legendario**: http://blastoise.localhost/secure/legendario (con strip prefix)
+
+# Etapa 4. Área restringida y sala de prensa Pokémon
+
+## Area restringida
+En la imagen se puede observar como llamando al mismo servicio de neo4j que se llamo anteriormente, ahora no se tiene acceso
+![image.png](imgs/image%20copy%206.png)
+
+## Sala de prensa
+Se observa un nuevo servicio dando un mensaje de bienvenida y mostrando la hora del servidor
+![image.png](imgs/image%20copy%207.png)
+
+
+# Diagrama 
+
+![image.png](imgs/diagrama.jpg)
