@@ -36,8 +36,9 @@ services:
       - "traefik.http.routers.neo4j.rule=Host(`greninja.localhost`)"
       - "traefik.http.services.neo4j.loadbalancer.server.port=7474"
 
-  flask-api:
+  flask-api-1:
     build: ./flask
+    container_name: flask_comercial_1
     restart: always
     depends_on:
       - jorge-neo4j
@@ -50,8 +51,47 @@ services:
       - traefik_network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.flask-api.rule=Host(`blastoise.localhost`)"
-      - "traefik.http.services.flask-api.loadbalancer.server.port=5000"
+      - "traefik.http.routers.comercial.rule=Host(`blastoise.localhost`) && Path(`/`)"
+      - "traefik.http.routers.comercial.service=comercial"
+      - "traefik.http.services.comercial.loadbalancer.server.port=5000"
+
+  flask-api-2:
+    build: ./flask
+    container_name: flask_comercial_2
+    restart: always
+    depends_on:
+      - jorge-neo4j
+      - traefik
+    environment:
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USER=${NEO4J_USER}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+    networks:
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.comercial2.rule=Host(`blastoise.localhost`) && Path(`/`)"
+      - "traefik.http.routers.comercial2.service=comercial"
+
+  flask-api-legendario:
+    build: ./flask
+    container_name: flask_legendario
+    restart: always
+    depends_on:
+      - jorge-neo4j
+      - traefik
+    environment:
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USER=${NEO4J_USER}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+    networks:
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.legendario.rule=Host(`blastoise.localhost`) && Path(`/legendario`)"
+      - "traefik.http.routers.legendario.service=legendario"
+      - "traefik.http.routers.legendario.priority=100"
+      - "traefik.http.services.legendario.loadbalancer.server.port=5000"
 
 volumes:
   neo4j_data:
